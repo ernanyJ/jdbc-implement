@@ -66,7 +66,6 @@ public class SellerDaoJDBC implements SellerDao {
     @Override
     public void deleteById(Integer id) {
         PreparedStatement st = null;
-        ResultSet rs = null;
 
         try {
             conn.setAutoCommit(false);
@@ -109,7 +108,6 @@ public class SellerDaoJDBC implements SellerDao {
             if (rs.next()) {
                 Department dep = instantiateDepartment(rs);
                 Seller obj = instantiateSeller(rs, dep);
-
                 return obj;
             }
             return null;
