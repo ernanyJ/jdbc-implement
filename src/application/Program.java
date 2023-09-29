@@ -17,13 +17,20 @@ public class Program {
         Date d1 = new Date(2004,06,24);
 
         Department dep = new Department(1,null);
-        Seller obj = new Seller(null,"Breno","breno@gmail",d1,3500.0,dep);
 
 
+        Seller sel2 = sellerDao.findById(17);
 
+        System.out.println(sel2 + "\n\n");
 
-        Seller dois = sellerDao.findById(11);
-        System.out.println(dois);
+        sel2.setName("milote");
+        sel2.setEmail("milhote@gmaill");
+
+        System.out.println("updated sel 2\n\n" + sel2 + "\n\n");
+
+        sellerDao.update(sel2);
+
+       // sellerDao.findById(11);
 
 
     }

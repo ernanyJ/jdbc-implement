@@ -61,6 +61,35 @@ public class SellerDaoJDBC implements SellerDao {
     @Override
     public void update(Seller seller) {
 
+        PreparedStatement st = null;
+        ResultSet rs = null;
+
+        try {
+            conn.setAutoCommit(false);
+            st = conn.prepareStatement(
+                    """
+                                UPDATE seller
+                                SET Name = ?, Email = ?, BirthDate = ?, BaseSalary = ?
+                                WHERE Id = ?;
+                                
+                            """, Statement.RETURN_GENERATED_KEYS);
+
+            st.setString(1, seller.getName());
+            st.setString(2, seller.getEmail());
+            st.setDate(3, new java.sql.Date(seller.getBirthDate().getTime()));
+            st.setDouble(4, seller.getBaseSalary());
+            st.setInt(5, seller.getId());
+
+            st.executeUpdate();
+            conn.commit();
+            System.out.println("Update done.");
+
+        } catch (SQLException e) {
+            rollbackTransaction(conn);
+            throw new DbException("Update failed. Caused by: " + e.getMessage());
+        } finally {
+            DB.closeStatement(st);
+        }
     }
 
     @Override
@@ -75,21 +104,16 @@ public class SellerDaoJDBC implements SellerDao {
                                """);
 
             st.setInt(1, id);
+            st.executeUpdate();
             conn.commit();
+            System.out.println("Delete seller done.");
         } catch (SQLException e) {
-            try {
-                conn.rollback();
-                throw new DbException("Transaction failed. Rolledback");
-            } catch (SQLException ex){
-                throw new DbException("Fail trying to rollback. Caused by: " + ex.getMessage());
-            }
-
+            rollbackTransaction(conn);
+            throw new DbException(e.getMessage());
         } finally {
             DB.closeStatement(st);
         }
-
     }
-
 
     @Override
     public Seller findById(Integer id) {
@@ -111,6 +135,7 @@ public class SellerDaoJDBC implements SellerDao {
                 return obj;
             }
             return null;
+
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
         } finally {
@@ -216,5 +241,12 @@ public class SellerDaoJDBC implements SellerDao {
         return obj;
     }
 
+    private void rollbackTransaction(Connection conn) {
+        try {
+            conn.rollback();
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+    }
 }
 
