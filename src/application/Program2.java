@@ -10,15 +10,9 @@ public class Program2 {
     public static void main(String[] args) {
 
         DepartmentDao depDao = DaoFactory.createDepartmenDao();
-        Department dep = new Department(null,"Toys");
-
+        Department dep = depDao.findById(12);
         System.out.println(dep);
-
-        dep.setName("sex");
-
-        System.out.println("after change dep: " + dep);
-
-        depDao.update(dep);
+        depDao.deleteById(12);
 
 
     }

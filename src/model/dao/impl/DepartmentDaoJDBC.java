@@ -18,7 +18,6 @@ public class DepartmentDaoJDBC implements DepartmentDao {
 
     @Override
     public void insert(Department department) {
-
         PreparedStatement st = null;
 
         try {
@@ -46,7 +45,6 @@ public class DepartmentDaoJDBC implements DepartmentDao {
 
     @Override
     public void update(Department department) {
-
         PreparedStatement st = null;
 
         try {
@@ -67,12 +65,29 @@ public class DepartmentDaoJDBC implements DepartmentDao {
         } finally {
             DB.closeStatement(st);
         }
-
     }
 
     @Override
     public void deleteById(Integer id) {
+        PreparedStatement st = null;
 
+        try {
+            conn.setAutoCommit(false);
+            st = conn.prepareStatement("""
+                    DELETE FROM DEPARTMENT
+                    WHERE id = ?;
+                    """);
+
+            st.setInt(1, id);
+            st.executeUpdate();
+            conn.commit();
+
+        } catch (SQLException e) {
+            rollbackTransaction(conn);
+            throw new DbException(e.getMessage());
+        } finally {
+            DB.closeStatement(st);
+        }
     }
 
     @Override
@@ -88,15 +103,16 @@ public class DepartmentDaoJDBC implements DepartmentDao {
                     """);
 
             st.setInt(1, id);
+
             rs = st.executeQuery();
             if (rs.next()) {
-                Department dep = instantiateDepartment(rs);
+                Department dep = new Department(rs.getInt("Id"), rs.getString("Name"));
                 return dep;
             }
             return null;
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
-        } finally{
+        } finally {
             DB.closeStatement(st);
             DB.closeResultSet(rs);
         }
@@ -113,13 +129,6 @@ public class DepartmentDaoJDBC implements DepartmentDao {
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
         }
-    }
-
-    private Department instantiateDepartment(ResultSet rs) throws SQLException {
-        Department dep = new Department();
-        dep.setId(rs.getInt("DepartmentId"));
-        dep.setName(rs.getString("depName"));
-        return dep;
     }
 
 }
