@@ -14,9 +14,11 @@ public class Program2 {
 
         System.out.println(dep);
 
-        depDao.insert(dep);
+        dep.setName("sex");
 
-        System.out.println(dep);
+        System.out.println("after change dep: " + dep);
+
+        depDao.update(dep);
 
 
     }
