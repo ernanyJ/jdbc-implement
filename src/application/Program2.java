@@ -4,6 +4,8 @@ import model.dao.DaoFactory;
 import model.dao.DepartmentDao;
 import model.entities.Department;
 
+import java.util.List;
+
 public class Program2 {
 
 
@@ -11,9 +13,11 @@ public class Program2 {
 
         DepartmentDao depDao = DaoFactory.createDepartmenDao();
         Department dep = depDao.findById(12);
-        System.out.println(dep);
-        depDao.deleteById(12);
 
+        List<Department> list = depDao.findAll();
+        for(Department x : list){
+            System.out.println(x);
+        }
 
     }
 
