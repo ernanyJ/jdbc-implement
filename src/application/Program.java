@@ -14,6 +14,8 @@ public class Program {
     public static void main(String[] args) {
 
         SellerDao sellerDao = DaoFactory.createSellerDao();
+
+
         Date d1 = new Date(2004,06,24);
 
         Department dep = new Department(1,null);
